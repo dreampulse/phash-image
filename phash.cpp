@@ -4,27 +4,18 @@
 #include <pHash.h>
 #include <sstream>
 #include <fstream>
-#include <cstdio>
+#include <iomanip>
 using namespace node;
 using namespace v8;
 using namespace Nan;
 
-template <typename T>
-string NumberToString ( T Number ) {
-    ostringstream ss;
-    ss << Number;
-    return ss.str();
-}
-
-template <typename T>
-T StringToNumber ( const string &Text ) {
-    istringstream ss(Text);
-    T result;
-    return ss >> result ? result : 0;
-}
-
-const char* toCString(const String::Utf8Value& value) {
-    return *value ? *value : "<string conversion failed>";
+template < typename T >
+std::string int_to_hex( T i ) {
+  std::stringstream stream;
+  stream << "0x"
+         << std::setfill ('0') << std::setw(sizeof(T)*2)
+         << std::hex << i;
+  return stream.str();
 }
 
 bool fileExists(const char* filename) {
@@ -36,23 +27,24 @@ bool fileExists(const char* filename) {
 class PhashRequest : public NanAsyncWorker {
  public:
   PhashRequest(NanCallback *callback, string file)
-    : NanAsyncWorker(callback), file(file), hash("0") {}
+    : NanAsyncWorker(callback), error(false), file(file), hash("0") {}
   ~PhashRequest() {}
 
   void Execute () {
     // prevent segfault on an empty file, see https://github.com/aaronm67/node-phash/issues/8
     const char* _file = file.c_str();
     if (!fileExists(_file)) {
+        error = true;
         return;
     }
 
-    string ret;
     try {
         ulong64 _hash = 0;
         ph_dct_imagehash(_file, _hash);
-        hash = NumberToString(_hash);
+        hash = int_to_hex(_hash);
     }
     catch(...) {
+        error = true;
         // something went wrong with hashing
         // probably a CImg or ImageMagick IO Problem
     }
@@ -63,8 +55,8 @@ class PhashRequest : public NanAsyncWorker {
 
     Handle<Value> argv[2];
 
-    if (hash == "0") {
-        argv[0] = NanError("Error getting image hash");
+    if (error) {
+        argv[0] = NanError("Error getting image phash.");
     }
     else {
         argv[0] = NanNull();
@@ -76,6 +68,7 @@ class PhashRequest : public NanAsyncWorker {
   }
 
  private:
+    bool error;
     string file;
     string hash;
 };
@@ -87,25 +80,8 @@ NAN_METHOD(ImageHashAsync) {
     NanReturnUndefined();
 }
 
-NAN_METHOD(HammingDistance) {
-    NanScope();
-
-    String::Utf8Value arg0(args[0]);
-    String::Utf8Value arg1(args[1]);
-    string aString = string(toCString(arg0));
-    string bString = string(toCString(arg1));
-
-    ulong64 hasha = StringToNumber<ulong64>(aString);
-    ulong64 hashb = StringToNumber<ulong64>(bString);
-
-    int distance = ph_hamming_distance(hasha,hashb);
-
-    NanReturnValue(NanNew<Number>(distance));
-}
-
 void RegisterModule(Handle<Object> target) {
   NODE_SET_METHOD(target, "imageHash", ImageHashAsync);
-  NODE_SET_METHOD(target, "hammingDistance", HammingDistance);
 }
 
 NODE_MODULE(pHash, RegisterModule);

@@ -41,10 +41,8 @@ $ npm install phash-image
 ```js
 var phash = require('phash-image');
 // asynchronous hash
-phash.imageHash(filename, (err, hash) => );
-phash.imageHash(filename).then( hash => );
-
-var distance = phash.hammingDistance(hash1, hash2);
+phash(filename, (err, hash) => );
+phash(filename).then( hash => );
 ```
 
 [npm-image]: https://img.shields.io/npm/v/phash-image.svg?style=flat-square
