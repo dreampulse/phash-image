@@ -14,8 +14,10 @@
       ],
       'link_settings': {
         'libraries': ['-lpHash']
-      }
+      },
+      "include_dirs" : [
+        "<!(node -e \"require('nan')\")"
+      ]
     }
   ]
 }
-

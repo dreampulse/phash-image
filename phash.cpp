@@ -1,18 +1,13 @@
 #include <v8.h>
 #include <node.h>
+#include <nan.h>
 #include <pHash.h>
 #include <sstream>
 #include <fstream>
 #include <cstdio>
 using namespace node;
 using namespace v8;
-
-struct PhashRequest {
-    string file;
-    string hash;
-    uv_work_t request;
-    Persistent<Function> callback;
-};
+using namespace Nan;
 
 template <typename T>
 string NumberToString ( T Number ) {
@@ -37,111 +32,85 @@ bool fileExists(const char* filename) {
     return file;
 }
 
-const string getHash(const char* file) {
+// https://gist.github.com/rvagg/bb08a8bd2b6cbc264056#file-phash-cpp
+class PhashRequest : public NanAsyncWorker {
+ public:
+  PhashRequest(NanCallback *callback, string file)
+    : NanAsyncWorker(callback), file(file), hash("0") {}
+  ~PhashRequest() {}
+
+  void Execute () {
     // prevent segfault on an empty file, see https://github.com/aaronm67/node-phash/issues/8
-    if (!fileExists(file)) {
-        return "0";
+    const char* _file = file.c_str();
+    if (!fileExists(_file)) {
+        return;
     }
 
     string ret;
     try {
-        ulong64 hash = 0;
-        ph_dct_imagehash(file, hash);
-        return NumberToString(hash);   
+        ulong64 _hash = 0;
+        ph_dct_imagehash(_file, _hash);
+        hash = NumberToString(_hash);
     }
     catch(...) {
         // something went wrong with hashing
         // probably a CImg or ImageMagick IO Problem
-        return "0";
     }
-}
+  }
 
-void HashWorker(uv_work_t* req) {
-    PhashRequest* request = static_cast<PhashRequest*>(req->data);
-    request->hash = getHash(request->file.c_str());
-}
-
-void HashAfter(uv_work_t* req, int status) {
-    HandleScope scope;
-    PhashRequest* request = static_cast<PhashRequest*>(req->data);
+  void HandleOKCallback () {
+    NanScope();
 
     Handle<Value> argv[2];
 
-    if (request->hash == "0") {
-        argv[0] = String::New("Error getting image hash");
+    if (hash == "0") {
+        argv[0] = NanError("Error getting image hash");
     }
     else {
-        argv[0] = Undefined();
+        argv[0] = NanNull();
     }
 
-    argv[1] = String::New(request->hash.c_str());
-    request->callback->Call(Context::GetCurrent()->Global(), 2, argv);
-    request->callback.Dispose();
+    argv[1] = NanNew<String>(hash);
 
-    delete request;
-}
+    callback->Call(2, argv);
+  }
 
-Handle<Value> ImageHashAsync(const Arguments& args) {
+ private:
+    string file;
+    string hash;
+};
+
+NAN_METHOD(ImageHashAsync) {
     if (args.Length() < 2 || !args[1]->IsFunction()) {
         // no callback defined
-        return ThrowException(Exception::Error(String::New("Callback is required and must be an Function.")));
+        return NanThrowError("Callback is required and must be an Function.");
     }
 
     String::Utf8Value str(args[0]);
-    Handle<Function> cb = Handle<Function>::Cast(args[1]);
-    
-    PhashRequest* request = new PhashRequest;
-    request->callback = Persistent<Function>::New(cb);
-    request->file = string(*str);
-    request->request.data = request;
-    uv_queue_work(uv_default_loop(), &request->request, HashWorker, HashAfter);
-    return Undefined();
+    NanCallback *callback = new NanCallback(args[1].As<Function>());
+    NanAsyncQueueWorker(new PhashRequest(callback, string(*str)));
+    NanReturnUndefined();
 }
 
-Handle<Value> ImageHashSync(const Arguments& args) {
-    HandleScope scope;
-    String::Utf8Value str(args[0]);
-    string result = getHash(*str);
-    return scope.Close(String::New(result.c_str()));
-}
-
-Handle<Value> HammingDistance(const Arguments& args) {
-    HandleScope scope;
+NAN_METHOD(HammingDistance) {
+    NanScope();
 
     String::Utf8Value arg0(args[0]);
     String::Utf8Value arg1(args[1]);
     string aString = string(toCString(arg0));
     string bString = string(toCString(arg1));
-    
+
     ulong64 hasha = StringToNumber<ulong64>(aString);
     ulong64 hashb = StringToNumber<ulong64>(bString);
-    
-    int distance = ph_hamming_distance(hasha,hashb);
-    
-    return scope.Close(Number::New(distance));
-}
 
-/*
-    See https://github.com/aaronm67/node-phash/issues/4
-    V8 only supports 32 bit integers, so hashes must be returned as strings.
-    This is a legacy version that returns a 32 bit integer of the hash.
-*/
-Handle<Value> oldHash(const Arguments& args) {
-    String::Utf8Value str(args[0]);
-    const char* file = toCString(str);
-    ulong64 hash = 0;
-    ph_dct_imagehash(file, hash);
-    return Number::New(hash);
+    int distance = ph_hamming_distance(hasha,hashb);
+
+    NanReturnValue(NanNew<Number>(distance));
 }
 
 void RegisterModule(Handle<Object> target) {
-  NODE_SET_METHOD(target, "imageHashSync", ImageHashSync);
   NODE_SET_METHOD(target, "imageHash", ImageHashAsync);
   NODE_SET_METHOD(target, "hammingDistance", HammingDistance);
- 
-  // methods below are deprecated
-  NODE_SET_METHOD(target, "oldHash", oldHash);
-  NODE_SET_METHOD(target, "imagehash", ImageHashSync);
 }
 
 NODE_MODULE(pHash, RegisterModule);
