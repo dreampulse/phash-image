@@ -20,15 +20,21 @@ phash-image depends on [CImg](http://cimg.sourceforge.net/), [pHash](http://www.
 
 On Ubuntu:
 
-    sudo apt-get install cimg-dev libphash0-dev libmagickcore-dev
+```bash
+sudo apt-get install cimg-dev libphash0-dev libmagickcore-dev
+```
 
 On OSX:
 
-    brew install phash imagemagick
+```bash
+brew install phash imagemagick
+```
 
 Then, install using npm:
 
-    $ npm install phash-image
+```bash
+$ npm install phash-image
+```
 
 ## API
 
@@ -36,7 +42,7 @@ Then, install using npm:
 var phash = require('phash-image');
 // asynchronous hash
 phash.imageHash(filename, (err, hash) => );
-phash.imageHash(filename).then( hash => )
+phash.imageHash(filename).then( hash => );
 
 var distance = phash.hammingDistance(hash1, hash2);
 ```
