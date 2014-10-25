@@ -1,29 +1,22 @@
 {
-  "name": "phash",
-  "version": "0.0.5",
-  "description": "Bindings for node.js to pHash",
-  "main": "index",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/aaronm67/node-phash.git"
-  },
+  "name": "phash-image",
+  "version": "1.0.0",
+  "description": "phash for images",
+  "repository": "mgmtio/phash-image",
   "devDependencies": {
-    "node-gyp": "*",
-    "should": "1.0.0",
-    "mocha": "1.3.0"
-  },
-  "engines": {
-    "node": ">=0.8.0"
+    "bluebird": "2",
+    "mocha": "2",
+    "istanbul": "0",
+    "node-gyp": "*"
   },
   "script": {
     "preinstall": "node-gyp configure build",
     "preuninstall": "rm -rf build/*"
   },
-  "directories": {
-    "test": "tests"
-  },
   "scripts": {
-    "test": "node-gyp configure build && mocha"
+    "test": "node-gyp configure build && mocha --reporter spec",
+    "test-cov": "node-gyp configure build && istanbul cover node_modules/mocha/bin/_mocha -- --reporter dot",
+    "test-travis": "node-gyp configure build && istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --reporter dot"
   },
   "keywords": [
     "pHash",
@@ -37,9 +30,13 @@
   "contributors": [
     "Aaron Marasco <agm257@mail.missouri.edu>",
     "Taeho Kim <xissysnd@gmail.com>",
-    "Jeremy Dowell <jeremy@codevinsky.com>"
+    "Jeremy Dowell <jeremy@codevinsky.com>",
+    "Rod Vagg <r@va.gg> (https://github.com/rvagg)",
+    "Jonathan Ong <me@jongleberry.com> (https://github.com/jonathanong)"
   ],
   "dependencies": {
-    "nan": "^1.3.0"
-  }
+    "nan": "1",
+    "native-or-bluebird": "1"
+  },
+  "license": "MIT"
 }

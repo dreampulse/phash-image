@@ -81,11 +81,6 @@ class PhashRequest : public NanAsyncWorker {
 };
 
 NAN_METHOD(ImageHashAsync) {
-    if (args.Length() < 2 || !args[1]->IsFunction()) {
-        // no callback defined
-        return NanThrowError("Callback is required and must be an Function.");
-    }
-
     String::Utf8Value str(args[0]);
     NanCallback *callback = new NanCallback(args[1].As<Function>());
     NanAsyncQueueWorker(new PhashRequest(callback, string(*str)));
