@@ -38,7 +38,7 @@ describe("pHash", function() {
       });
 
       it('promise:' + i.path, function() {
-        return pHash(i.path).then(function (hash) {
+        return pHash(i.path).then(function(hash) {
           assert.equal(i.hash, hash);
         });
       });
@@ -52,24 +52,22 @@ describe("pHash", function() {
     });
 
     it("promise: should fail", function() {
-      return pHash("../examples/f.png").then(function () {
+      return pHash("../examples/f.png").then(function() {
         throw new Error('boom');
-      }).catch(function (err) {
+      }).catch(function(err) {
         assert(err.message !== 'boom');
       })
     });
   });
 
-  // describe('hammingDistance()', function() {
-  //   it('should be done', function() {
-  //     var hammingAB = pHash.hammingDistance(examples[0].hash, examples[1].hash);
-  //     var hammingAC = pHash.hammingDistance(examples[0].hash, examples[2].hash);
-  //     var hammingBC = pHash.hammingDistance(examples[1].hash, examples[2].hash);
-  //     var hammingAD = pHash.hammingDistance(examples[0].hash, examples[3].hash);
-  //     assert.equal(hammingAB, 0);
-  //     assert.equal(hammingAC, 38);
-  //     assert.equal(hammingBC, 38);
-  //     assert.equal(hammingAD, 12);
-  //   });
-  // });
+  describe('hammingDistance()', function() {
+    it('should be done', function() {
+      var hammingAA = pHash.hammingDistance(examples[0].hash, examples[0].hash);
+      var hammingAC = pHash.hammingDistance(examples[0].hash, examples[1].hash);
+      var hammingAD = pHash.hammingDistance(examples[0].hash, examples[2].hash);
+      assert.equal(hammingAA, 0);
+      assert.equal(hammingAC, 38);
+      assert.equal(hammingAD, 12);
+    });
+  });
 });
