@@ -1,18 +1,22 @@
-# node-phash
+# phash-image
 
-  node-pash is [pHash](http://www.phash.org/) bindings for node.js.
+[![NPM version][npm-image]][npm-url]
+[![Build status][travis-image]][travis-url]
+[![Test coverage][coveralls-image]][coveralls-url]
+[![Dependency Status][david-image]][david-url]
+[![License][license-image]][license-url]
+[![Downloads][downloads-image]][downloads-url]
+[![Gittip][gittip-image]][gittip-url]
 
-  Phash is a library that will create a "perceptual hash" of media files, so similar files will return similar hashes. Typically to compare hashes, 
+  [pHash](http://www.phash.org/) for images in node.js.
+
+  Phash is a library that will create a "perceptual hash" of media files, so similar files will return similar hashes. Typically to compare hashes,
   a simple [Hamming distance](http://en.wikipedia.org/wiki/Hamming_distance) between the two hashes is a good indicator of how similar two
   media files are.
 
-  Current version supports only image hashing. (no video & audio hashing)
-  
-  [![Build Status](https://travis-ci.org/aaronm67/node-phash.png?branch=master)](https://travis-ci.org/aaronm67/node-phash)
-
 ## Installation
 
-node-phash depends on  [CImg](http://cimg.sourceforge.net/), [pHash](http://www.phash.org/), [ImageMagicK](http://www.imagemagick.org/).
+phash-image depends on [CImg](http://cimg.sourceforge.net/), [pHash](http://www.phash.org/), [ImageMagicK](http://www.imagemagick.org/).
 
 On Ubuntu:
 
@@ -24,36 +28,32 @@ On OSX:
 
 Then, install using npm:
 
-    $ npm install phash
+    $ npm install phash-image
 
-## Functions
+## API
 
 ```js
-
+var phash = require('phash-image');
 // asynchronous hash
-imageHash(filename, function(err, hash));
+phash.imageHash(filename, (err, hash) => );
+phash.imageHash(filename).then( hash => )
 
-// synchronous hash
-var hash = imageHashSync(filename);
-
-hammingDistance(hash1, hash2);
+var distance = phash.hammingDistance(hash1, hash2);
 ```
 
-## Usage
-
-```js
-var pHash = require("phash");
-
-pHash.imageHash("file.jpg", function(err, hash) {
-    if (err) {
-        throw err;
-    }
-
-    // hash is the pHash of file.jpg
-});
-
-var hashA = pHash.imageHashSync("a.jpg");
-var hashB = pHash.imageHashSync("b.png");
-var hammingAB = pHash.hammingDistance(hashA,hashB);
-console.log("Hamming Distance A -> B: " + hammingAB);
-```
+[npm-image]: https://img.shields.io/npm/v/phash-image.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/phash-image
+[github-tag]: http://img.shields.io/github/tag/mgmtio/phash-image.svg?style=flat-square
+[github-url]: https://github.com/mgmtio/phash-image/tags
+[travis-image]: https://img.shields.io/travis/mgmtio/phash-image.svg?style=flat-square
+[travis-url]: https://travis-ci.org/mgmtio/phash-image
+[coveralls-image]: https://img.shields.io/coveralls/mgmtio/phash-image.svg?style=flat-square
+[coveralls-url]: https://coveralls.io/r/mgmtio/phash-image
+[david-image]: http://img.shields.io/david/mgmtio/phash-image.svg?style=flat-square
+[david-url]: https://david-dm.org/mgmtio/phash-image
+[license-image]: http://img.shields.io/npm/l/phash-image.svg?style=flat-square
+[license-url]: LICENSE
+[downloads-image]: http://img.shields.io/npm/dm/phash-image.svg?style=flat-square
+[downloads-url]: https://npmjs.org/package/phash-image
+[gittip-image]: https://img.shields.io/gratipay/jonathanong.svg?style=flat-square
+[gittip-url]: https://gratipay.com/jonathanong/

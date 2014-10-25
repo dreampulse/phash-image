@@ -1,6 +1,5 @@
 var assert = require("assert");
 var pHash = require('../index');
-require("should");
 
 var examples = [{
   path: "./examples/a.jpg",
