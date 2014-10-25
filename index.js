@@ -5,15 +5,20 @@ var pHash = require('./build/Release/pHash');
 module.exports = pHashImage;
 
 pHashImage.compare =
-  pHashImage.hammingDistance = hammingDistance;
+pHashImage.hammingDistance = hammingDistance;
 
 function pHashImage(file, cb) {
-  if (cb) return pHash.imageHash(file, cb);
-
   return new Promise(function(resolve, reject) {
     pHash.imageHash(file, function(err, hash) {
-      if (err) return reject(err);
+      if (err) {
+        reject(err);
+        cb && cb(err);
+        return;
+      }
+
+      hash = new Buffer(hash.slice(2), 'hex');
       resolve(hash);
+      cb && cb(null, hash);
     });
   });
 };
@@ -44,6 +49,7 @@ var lookup = {
 }
 
 function hexToBinary(s) {
+  if (Buffer.isBuffer(s)) s = s.toString('hex');
   s = s.replace(/^0x/, '');
   assert(/^[0-9a-fA-F]+$/.test(s));
   var ret = '';
@@ -55,7 +61,6 @@ function hammingDistance(a, b) {
   a = hexToBinary(a);
   b = hexToBinary(b);
   var count = 0;
-  for (var i = 0; i < a.length; i++)
-    if (a[i] !== b[i]) count++;
+  for (var i = 0; i < a.length; i++) if (a[i] !== b[i]) count++;
   return count;
 }

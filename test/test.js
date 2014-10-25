@@ -3,13 +3,13 @@ var pHash = require('..');
 
 var examples = [{
   path: "./examples/a.jpg",
-  hash: "0x27166fd624cb9439"
+  hash: "27166fd624cb9439"
 }, {
   path: "./examples/c.png",
-  hash: "0xd63078d8de3236c6"
+  hash: "d63078d8de3236c6"
 }, {
   path: "./examples/d.jpg",
-  hash: "0xa71a2de6269b9469"
+  hash: "a71a2de6269b9469"
 }];
 
 describe("pHash", function() {
@@ -28,18 +28,15 @@ describe("pHash", function() {
     examples.forEach(function(i) {
       it('cb:' + i.path, function(done) {
         pHash(i.path, function(err, hash) {
-          if (err) {
-            done(err);
-          }
-
-          assert.equal(i.hash, hash);
+          assert.ifError(err);
+          assert.equal(i.hash, hash.toString('hex'));
           done();
         });
       });
 
       it('promise:' + i.path, function() {
         return pHash(i.path).then(function(hash) {
-          assert.equal(i.hash, hash);
+          assert.equal(i.hash, hash.toString('hex'));
         });
       });
     });
