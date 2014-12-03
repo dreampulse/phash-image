@@ -8,20 +8,21 @@ pHashImage.compare =
 pHashImage.hammingDistance = hammingDistance;
 
 function pHashImage(file, cb) {
-  return new Promise(function(resolve, reject) {
+  var promise = new Promise(function(resolve, reject) {
     pHash.imageHash(file, function(err, hash) {
-      if (err) {
-        reject(err);
-        cb && cb(err);
-        return;
-      }
-
-      hash = new Buffer(hash.slice(2), 'hex');
-      resolve(hash);
-      cb && cb(null, hash);
+      if (err) return reject(err);
+      resolve(new Buffer(hash.slice(2), 'hex'));
     });
   });
-};
+
+  if (typeof cb === 'function') {
+    promise.then(function (hash) {
+      cb(null, hash);
+    }, cb);
+  }
+
+  return promise;
+}
 
 var lookup = {
   '0': '0000',
