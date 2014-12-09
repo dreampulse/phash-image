@@ -1,4 +1,7 @@
+
+var compare = require('hamming-distance');
 var assert = require("assert");
+
 var pHash = require('..');
 
 var examples = [{
@@ -59,9 +62,9 @@ describe("pHash", function() {
 
   describe('hammingDistance()', function() {
     it('should be done', function() {
-      var hammingAA = pHash.hammingDistance(examples[0].hash, examples[0].hash);
-      var hammingAC = pHash.hammingDistance(examples[0].hash, examples[1].hash);
-      var hammingAD = pHash.hammingDistance(examples[0].hash, examples[2].hash);
+      var hammingAA = compare(examples[0].hash, examples[0].hash);
+      var hammingAC = compare(examples[0].hash, examples[1].hash);
+      var hammingAD = compare(examples[0].hash, examples[2].hash);
       assert.equal(hammingAA, 0);
       assert.equal(hammingAC, 38);
       assert.equal(hammingAD, 12);
