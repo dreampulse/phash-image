@@ -44,9 +44,9 @@ var phash = require('phash-image');
 phash(filename, (err, hash) => );
 // as a promise
 phash(filename).then( hash => );
-// integer distance. the shorter, the more similar
-var distance = phash.compare(hash1, hash2);
 ```
+
+To compare phashes, use [hamming-distance](https://github.com/math-utils/hamming-distance).
 
 [npm-image]: https://img.shields.io/npm/v/phash-image.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/phash-image
