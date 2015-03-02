@@ -23,11 +23,18 @@ bool fileExists(const char* filename) {
     return file;
 }
 
+template <typename T>
+string NumberToString ( T Number ) {
+    ostringstream ss;
+    ss << Number;
+    return ss.str();
+}
+
 // https://gist.github.com/rvagg/bb08a8bd2b6cbc264056#file-phash-cpp
 class PhashRequest : public NanAsyncWorker {
  public:
   PhashRequest(NanCallback *callback, string file)
-    : NanAsyncWorker(callback), error(false), file(file), hash("0") {}
+    : NanAsyncWorker(callback), error(false), file(file), hash(""), bigint("") {}
   ~PhashRequest() {}
 
   void Execute () {
@@ -42,6 +49,7 @@ class PhashRequest : public NanAsyncWorker {
         ulong64 _hash = 0;
         ph_dct_imagehash(_file, _hash);
         hash = int_to_hex(_hash);
+        bigint = NumberToString(_hash);
     }
     catch(...) {
         error = true;
@@ -53,7 +61,7 @@ class PhashRequest : public NanAsyncWorker {
   void HandleOKCallback () {
     NanScope();
 
-    Handle<Value> argv[2];
+    Handle<Value> argv[3];
 
     if (error) {
         argv[0] = NanError("Error getting image phash.");
@@ -63,14 +71,16 @@ class PhashRequest : public NanAsyncWorker {
     }
 
     argv[1] = NanNew<String>(hash);
+    argv[2] = NanNew<String>(bigint);
 
-    callback->Call(2, argv);
+    callback->Call(3, argv);
   }
 
  private:
     bool error;
     string file;
     string hash;
+    string bigint;
 };
 
 NAN_METHOD(ImageHashAsync) {

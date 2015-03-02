@@ -70,4 +70,10 @@ describe("pHash", function() {
       assert.equal(hammingAD, 12);
     });
   });
+
+  it('should return a bigint', function () {
+    return pHash('./examples/a.jpg', true).then(function (hash) {
+      assert(/^[0-9]+$/.test(hash))
+    })
+  })
 });

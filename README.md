@@ -46,6 +46,13 @@ phash(filename, (err, hash) => );
 phash(filename).then( hash => );
 ```
 
+If you want to return a ulong64 as a string to store in a database,
+set `true` as the second parameter.
+
+```js
+phash(filename, true).then( bigint => )
+```
+
 To compare phashes, use [hamming-distance](https://github.com/math-utils/hamming-distance).
 
 [npm-image]: https://img.shields.io/npm/v/phash-image.svg?style=flat-square
