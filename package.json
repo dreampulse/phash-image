@@ -5,7 +5,7 @@
   "repository": "mgmtio/phash-image",
   "devDependencies": {
     "bluebird": "2",
-    "hamming-distance": "^1.0.0",
+    "hamming-distance": "1",
     "istanbul": "0",
     "mocha": "2",
     "node-gyp": "*"
