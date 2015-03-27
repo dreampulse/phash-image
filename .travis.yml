@@ -4,6 +4,7 @@ node_js:
 - "0.12"
 - "iojs"
 before_install:
+- "sudo apt-get update"
 - "sudo apt-get install cimg-dev libphash0-dev libmagickcore-dev"
 script: "npm run-script test-travis"
 after_script: "npm install coveralls@2 && cat ./coverage/lcov.info | coveralls"
