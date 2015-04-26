@@ -20,7 +20,7 @@ std::string int_to_hex( T i ) {
 
 bool fileExists(const char* filename) {
     ifstream file(filename);
-    return file;
+    return !!file;
 }
 
 template <typename T>
