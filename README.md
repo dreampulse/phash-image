@@ -38,6 +38,8 @@ $ npm install phash-image
 
 ## API
 
+### phash(filename, [returnBigInt], [callback]).then( hash => )
+
 ```js
 var phash = require('phash-image');
 // with a callback
@@ -52,6 +54,17 @@ set `true` as the second parameter.
 ```js
 phash(filename, true).then( bigint => )
 ```
+
+### phash.mh(filename, [callback]).then( hash => )
+
+Phash's [MH](http://www.phash.org/docs/design.html) 72-byte length hash.
+This is slower, but should be more accurate.
+
+```js
+phash.mh(filename).then( hash => )
+```
+
+### Comparing phashes
 
 To compare phashes, use [hamming-distance](https://github.com/math-utils/hamming-distance).
 

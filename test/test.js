@@ -77,3 +77,21 @@ describe("pHash", function() {
     })
   })
 });
+
+describe('MH', function () {
+  it('should return a buffer as a promise', function () {
+    return pHash.mh('./examples/a.jpg').then(function (buf) {
+      assert(Buffer.isBuffer(buf))
+      assert.equal(72, buf.length)
+    })
+  })
+
+  it('should return a buffer in the callback', function (done) {
+    return pHash.mh('./examples/a.jpg', function (err, buf) {
+      if (err) return done(err)
+      assert(Buffer.isBuffer(buf))
+      assert.equal(72, buf.length)
+      done()
+    })
+  })
+})

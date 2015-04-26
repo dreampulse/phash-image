@@ -39,7 +39,7 @@ function pHashImage(file, returnBigInt, cb) {
 
 /**
  * http://www.phash.org/docs/design.html
- * Returns an 9-byte buffer.
+ * Returns an 72-byte buffer.
  *
  * @param {String} filename
  * @param {Function} callback(err, Buffer)
