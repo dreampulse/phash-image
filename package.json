@@ -15,9 +15,10 @@
     "preuninstall": "rm -rf build/*"
   },
   "scripts": {
-    "test": "node-gyp configure build && mocha --reporter spec",
-    "test-cov": "node-gyp configure build && istanbul cover node_modules/mocha/bin/_mocha -- --reporter dot",
-    "test-travis": "node-gyp configure build && istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --reporter dot"
+    "build": "node-gyp configure build",
+    "test": "npm run build && mocha",
+    "test-cov": "npm run build && istanbul cover node_modules/mocha/bin/_mocha -- --reporter dot",
+    "test-travis": "npm run build && istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --reporter dot"
   },
   "keywords": [
     "pHash",
