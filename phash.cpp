@@ -74,7 +74,7 @@ class PhashRequest : public Nan::AsyncWorker {
   void HandleOKCallback () {
     Nan::HandleScope scope;
 
-    Handle<Value> argv[3];
+    v8::Local<v8::Value> argv[3];
 
     if (error) {
         argv[0] = Nan::Error("Error getting image phash.");
@@ -97,7 +97,7 @@ class PhashRequest : public Nan::AsyncWorker {
 };
 
 NAN_METHOD(ImageHashAsync) {
-    String::Utf8Value str(info[0]);
+    v8::String::Utf8Value str(info[0]);
     Nan::Callback *callback = new Nan::Callback(info[1].As<v8::Function>());
     Nan::AsyncQueueWorker(new PhashRequest(callback, string(*str)));
     return;
@@ -135,7 +135,7 @@ class MHPhashRequest : public Nan::AsyncWorker {
   void HandleOKCallback () {
     Nan::HandleScope scope;
 
-    Handle<Value> argv[2];
+    v8::Local<v8::Value> argv[2];
 
     if (error) {
         argv[0] = Nan::Error("Error getting image phash.");
@@ -157,13 +157,13 @@ class MHPhashRequest : public Nan::AsyncWorker {
 };
 
 NAN_METHOD(MHImageHashAsync) {
-    String::Utf8Value str(info[0]);
+    v8::String::Utf8Value str(info[0]);
     Nan::Callback *callback = new Nan::Callback(info[1].As<v8::Function>());
     Nan::AsyncQueueWorker(new MHPhashRequest(callback, string(*str)));
     return;
 }
 
-void RegisterModule(Handle<Object> target) {
+void RegisterModule(v8::Local<v8::Object> target) {
   Nan::SetMethod(target, "imageHash", ImageHashAsync);
   Nan::SetMethod(target, "imageHashMH", MHImageHashAsync);
 }
