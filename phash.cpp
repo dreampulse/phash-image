@@ -6,7 +6,6 @@
 #include <fstream>
 #include <iomanip>
 using namespace node;
-using namespace v8;
 
 template < typename T >
 std::string int_to_hex( T i ) {
@@ -84,8 +83,8 @@ class PhashRequest : public Nan::AsyncWorker {
         argv[0] = Nan::Null();
     }
 
-    argv[1] = Nan::New<String>(hash).ToLocalChecked();
-    argv[2] = Nan::New<String>(bigint).ToLocalChecked();
+    argv[1] = Nan::New<v8::String>(hash).ToLocalChecked();
+    argv[2] = Nan::New<v8::String>(bigint).ToLocalChecked();
 
     callback->Call(3, argv);
   }
@@ -99,7 +98,7 @@ class PhashRequest : public Nan::AsyncWorker {
 
 NAN_METHOD(ImageHashAsync) {
     String::Utf8Value str(info[0]);
-    Nan::Callback *callback = new Nan::Callback(info[1].As<Function>());
+    Nan::Callback *callback = new Nan::Callback(info[1].As<v8::Function>());
     Nan::AsyncQueueWorker(new PhashRequest(callback, string(*str)));
     return;
 }
@@ -145,7 +144,7 @@ class MHPhashRequest : public Nan::AsyncWorker {
         argv[0] = Nan::Null();
     }
 
-    argv[1] = Nan::New<String>(hash).ToLocalChecked();
+    argv[1] = Nan::New<v8::String>(hash).ToLocalChecked();
 
     callback->Call(2, argv);
 
@@ -159,7 +158,7 @@ class MHPhashRequest : public Nan::AsyncWorker {
 
 NAN_METHOD(MHImageHashAsync) {
     String::Utf8Value str(info[0]);
-    Nan::Callback *callback = new Nan::Callback(info[1].As<Function>());
+    Nan::Callback *callback = new Nan::Callback(info[1].As<v8::Function>());
     Nan::AsyncQueueWorker(new MHPhashRequest(callback, string(*str)));
     return;
 }
