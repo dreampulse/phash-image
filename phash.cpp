@@ -7,7 +7,6 @@
 #include <iomanip>
 using namespace node;
 using namespace v8;
-using namespace Nan;
 
 template < typename T >
 std::string int_to_hex( T i ) {
@@ -46,10 +45,10 @@ string uint_to_hex(uint8_t* input, int len)
 }
 
 // https://gist.github.com/rvagg/bb08a8bd2b6cbc264056#file-phash-cpp
-class PhashRequest : public NanAsyncWorker {
+class PhashRequest : public Nan::AsyncWorker {
  public:
-  PhashRequest(NanCallback *callback, string file)
-    : NanAsyncWorker(callback), error(false), file(file), hash(""), bigint("") {}
+  PhashRequest(Nan::Callback *callback, string file)
+    : Nan::AsyncWorker(callback), error(false), file(file), hash(""), bigint("") {}
   ~PhashRequest() {}
 
   void Execute () {
@@ -74,19 +73,19 @@ class PhashRequest : public NanAsyncWorker {
   }
 
   void HandleOKCallback () {
-    NanScope();
+    Nan::HandleScope scope;
 
     Handle<Value> argv[3];
 
     if (error) {
-        argv[0] = NanError("Error getting image phash.");
+        argv[0] = Nan::Error("Error getting image phash.");
     }
     else {
-        argv[0] = NanNull();
+        argv[0] = Nan::Null();
     }
 
-    argv[1] = NanNew<String>(hash);
-    argv[2] = NanNew<String>(bigint);
+    argv[1] = Nan::New<String>(hash).ToLocalChecked();
+    argv[2] = Nan::New<String>(bigint).ToLocalChecked();
 
     callback->Call(3, argv);
   }
@@ -99,17 +98,17 @@ class PhashRequest : public NanAsyncWorker {
 };
 
 NAN_METHOD(ImageHashAsync) {
-    String::Utf8Value str(args[0]);
-    NanCallback *callback = new NanCallback(args[1].As<Function>());
-    NanAsyncQueueWorker(new PhashRequest(callback, string(*str)));
-    NanReturnUndefined();
+    String::Utf8Value str(info[0]);
+    Nan::Callback *callback = new Nan::Callback(info[1].As<Function>());
+    Nan::AsyncQueueWorker(new PhashRequest(callback, string(*str)));
+    return;
 }
 
 // https://gist.github.com/rvagg/bb08a8bd2b6cbc264056#file-phash-cpp
-class MHPhashRequest : public NanAsyncWorker {
+class MHPhashRequest : public Nan::AsyncWorker {
  public:
-  MHPhashRequest(NanCallback *callback, string file)
-    : NanAsyncWorker(callback), error(false), file(file), hash("") {}
+  MHPhashRequest(Nan::Callback *callback, string file)
+    : Nan::AsyncWorker(callback), error(false), file(file), hash("") {}
   ~MHPhashRequest() {}
 
   void Execute () {
@@ -135,18 +134,18 @@ class MHPhashRequest : public NanAsyncWorker {
   }
 
   void HandleOKCallback () {
-    NanScope();
+    Nan::HandleScope scope;
 
     Handle<Value> argv[2];
 
     if (error) {
-        argv[0] = NanError("Error getting image phash.");
+        argv[0] = Nan::Error("Error getting image phash.");
     }
     else {
-        argv[0] = NanNull();
+        argv[0] = Nan::Null();
     }
 
-    argv[1] = NanNew<String>(hash);
+    argv[1] = Nan::New<String>(hash).ToLocalChecked();
 
     callback->Call(2, argv);
 
@@ -159,15 +158,15 @@ class MHPhashRequest : public NanAsyncWorker {
 };
 
 NAN_METHOD(MHImageHashAsync) {
-    String::Utf8Value str(args[0]);
-    NanCallback *callback = new NanCallback(args[1].As<Function>());
-    NanAsyncQueueWorker(new MHPhashRequest(callback, string(*str)));
-    NanReturnUndefined();
+    String::Utf8Value str(info[0]);
+    Nan::Callback *callback = new Nan::Callback(info[1].As<Function>());
+    Nan::AsyncQueueWorker(new MHPhashRequest(callback, string(*str)));
+    return;
 }
 
 void RegisterModule(Handle<Object> target) {
-  NODE_SET_METHOD(target, "imageHash", ImageHashAsync);
-  NODE_SET_METHOD(target, "imageHashMH", MHImageHashAsync);
+  Nan::SetMethod(target, "imageHash", ImageHashAsync);
+  Nan::SetMethod(target, "imageHashMH", MHImageHashAsync);
 }
 
 NODE_MODULE(pHash, RegisterModule);

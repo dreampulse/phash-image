@@ -37,7 +37,7 @@
     "Jonathan Ong <me@jongleberry.com> (https://github.com/jonathanong)"
   ],
   "dependencies": {
-    "nan": "1",
+    "nan": "^2.0.5",
     "native-or-bluebird": "1"
   },
   "license": "MIT"
