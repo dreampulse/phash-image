@@ -31,7 +31,8 @@
         'libraries': ['<!@(pkg-config --libs pHash)']
       },
       "include_dirs" : [
-        "<!(node -e \"require('nan')\")"
+        "<!(node -e \"require('nan')\")",
+        "/usr/local/Cellar/cimg/1.6.3/include"
       ]
     }
   ]
